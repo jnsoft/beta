@@ -9,6 +9,7 @@ import (
 
 var inputFile string
 var outputFile string
+var fileName string
 var lines string
 var proxyUrl string
 
@@ -25,6 +26,8 @@ func main() {
 	betaCmd.AddCommand(hexCmd())
 	betaCmd.AddCommand(uuidCmd())
 	betaCmd.AddCommand(httpCmd())
+	betaCmd.AddCommand(hashCmd())
+	betaCmd.AddCommand(hmacCmd())
 
 	err := betaCmd.Execute()
 	if err != nil {
@@ -39,6 +42,10 @@ func insertLineBreakFlag(cmd *cobra.Command) {
 
 func addProxyFlag(cmd *cobra.Command) {
 	cmd.Flags().StringVarP(&proxyUrl, "proxy", "p", "", "proxy url")
+}
+
+func addFileFlag(cmd *cobra.Command) {
+	cmd.Flags().StringVarP(&fileName, "filename", "f", "", "Path to file")
 }
 
 func addDefaultFileFlags(cmd *cobra.Command) {
