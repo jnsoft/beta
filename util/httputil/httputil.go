@@ -5,10 +5,48 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
+	"net/url"
 	neturl "net/url"
 	"time"
+
+	"golang.org/x/net/proxy"
 )
+
+// Usage: connected := TestConnection("example.com", 80, 3 * time.Second, "")
+func TestConnection(address string, port int, timeout time.Duration, proxyURL string) bool {
+	// Combine the address and port into a single string
+	target := fmt.Sprintf("%s:%d", address, port)
+	// Create a dialer
+	var dialer proxy.Dialer
+	if proxyURL != "" {
+		// Parse the proxy URL
+		parsedProxyURL, err := url.Parse(proxyURL)
+		if err != nil {
+			fmt.Printf("Invalid proxy URL: %v\n", err)
+			return false
+		}
+		// Create a proxy dialer
+		dialer, err = proxy.FromURL(parsedProxyURL, proxy.Direct)
+		if err != nil {
+			fmt.Printf("Failed to create proxy dialer: %v\n", err)
+			return false
+		}
+	} else {
+		// Use a direct connection if no proxy is specified
+		dialer = &net.Dialer{Timeout: timeout}
+	}
+	// Attempt to establish a connection using the dialer
+	// ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	// defer cancel()
+	conn, err := dialer.Dial("tcp", target)
+	if err != nil {
+		return false
+	}
+	defer conn.Close()
+	return true
+}
 
 func GetString(url string, proxyURL string) (string, int, error) {
 	resp, code, err := GetBytes(url, proxyURL)

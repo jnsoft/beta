@@ -3,7 +3,10 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
+	"time"
 
+	"github.com/jnsoft/beta/util/httputil"
 	"github.com/spf13/cobra"
 )
 
@@ -12,6 +15,7 @@ var outputFile string
 var fileName string
 var lines string
 var proxyUrl string
+var portNumber string
 
 func main() {
 	var betaCmd = &cobra.Command{
@@ -22,6 +26,7 @@ func main() {
 	}
 
 	betaCmd.AddCommand(versionCmd)
+	betaCmd.AddCommand(testConnectionCmd())
 	betaCmd.AddCommand(b64Cmd())
 	betaCmd.AddCommand(hexCmd())
 	betaCmd.AddCommand(uuidCmd())
@@ -34,6 +39,32 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
+}
+
+func testConnectionCmd() *cobra.Command {
+	var testConnectionCmd = &cobra.Command{
+		Use:   "connect",
+		Short: "Test network connection.",
+		Args:  cobra.ExactArgs(1),
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			return IncorrectUsageErr()
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			address := args[0]
+
+			port, err := strconv.Atoi(portNumber)
+			if err != nil {
+				fmt.Printf("Error converting repitions to int: %v\n", err)
+				os.Exit(1)
+			}
+			httputil.TestConnection(address, port, 3*time.Second, proxyUrl)
+		},
+	}
+
+	addProxyFlag(testConnectionCmd)
+	testConnectionCmd.Flags().StringVarP(&repitions, "port", "p", "80", "Port number to use")
+
+	return testConnectionCmd
 }
 
 func insertLineBreakFlag(cmd *cobra.Command) {
