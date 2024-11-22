@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"strconv"
 
@@ -36,17 +35,17 @@ func toB64Cmd() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 
 			if len(args) == 0 {
-				fmt.Println("Please provide a string to encode")
+				cmd.Println("Please provide a string to encode")
 				os.Exit(1)
 			}
 
 			n, err := strconv.Atoi(lines)
 			if err != nil {
-				fmt.Printf("Error converting lines to int: %v\n", err)
+				cmd.Printf("Error converting lines to int: %v\n", err)
 				os.Exit(1)
 			}
 			encoded := stringutil.ToBase64([]byte(args[0]), n)
-			fmt.Println(encoded)
+			cmd.Println(encoded)
 		},
 	}
 	insertLineBreakFlag(cmd)
@@ -61,16 +60,16 @@ func fromB64Cmd() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			// Check if there is a string to decode
 			if len(args) == 0 {
-				fmt.Println("Please provide a string to decode")
+				cmd.Println("Please provide a string to decode")
 				os.Exit(1)
 			}
 
 			decoded, err := stringutil.FromBase64(args[0])
 			if err != nil {
-				fmt.Println("Error decoding string:", err)
+				cmd.Println("Error decoding string:", err)
 				os.Exit(1)
 			}
-			fmt.Println(string(decoded))
+			cmd.Println(string(decoded))
 		},
 	}
 	return cmd
@@ -83,18 +82,18 @@ func fileToB64Cmd() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			n, err := strconv.Atoi(lines)
 			if err != nil {
-				fmt.Printf("Error converting lines to int: %v\n", err)
+				cmd.Printf("Error converting lines to int: %v\n", err)
 				os.Exit(1)
 			}
 
 			if inputFile == "" {
-				fmt.Println("Please provide a file to encode")
+				cmd.Println("Please provide a file to encode")
 				os.Exit(1)
 			}
 
 			data, err := os.ReadFile(inputFile)
 			if err != nil {
-				fmt.Println("Error reading file:", err)
+				cmd.Println("Error reading file:", err)
 				os.Exit(1)
 			}
 
@@ -102,11 +101,11 @@ func fileToB64Cmd() *cobra.Command {
 			if outputFile != "" {
 				err = os.WriteFile(outputFile, []byte(encoded), 0644)
 				if err != nil {
-					fmt.Println("Error writing file:", err)
+					cmd.Println("Error writing file:", err)
 					os.Exit(1)
 				}
 			} else {
-				fmt.Println(encoded)
+				cmd.Println(encoded)
 			}
 		},
 	}
@@ -123,30 +122,30 @@ func fileFromB64() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 
 			if inputFile == "" {
-				fmt.Println("Please provide a file to decode")
+				cmd.Println("Please provide a file to decode")
 				os.Exit(1)
 			}
 
 			data, err := os.ReadFile(inputFile)
 			if err != nil {
-				fmt.Println("Error reading file:", err)
+				cmd.Println("Error reading file:", err)
 				os.Exit(1)
 			}
 
 			decoded, err := stringutil.FromBase64(string(data))
 			if err != nil {
-				fmt.Println("Error decoding file:", err)
+				cmd.Println("Error decoding file:", err)
 				os.Exit(1)
 			}
 			if outputFile != "" {
 				err = os.WriteFile(outputFile, []byte(decoded), 0644)
 				if err != nil {
-					fmt.Println("Error writing file:", err)
+					cmd.Println("Error writing file:", err)
 					os.Exit(1)
 				}
 
 			} else {
-				fmt.Println(string(decoded))
+				cmd.Println(string(decoded))
 			}
 
 		},
