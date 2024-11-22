@@ -22,7 +22,7 @@ func AesEncrypt(plain []byte, password string) ([]byte, error) {
 		return nil, err
 	}
 
-	encrypted, err := gcmEncrypt(plain, key)
+	encrypted, err := GcmEncrypt(plain, key)
 	if err != nil {
 		return nil, err
 	}
@@ -37,10 +37,10 @@ func AesDecrypt(encrypted []byte, password string) ([]byte, error) {
 		return nil, err
 	}
 
-	return gcmDecrypt(encrypted[SALT_LENGTH:], key)
+	return GcmDecrypt(encrypted[SALT_LENGTH:], key)
 }
 
-func gcmEncrypt(plain, key []byte) ([]byte, error) {
+func GcmEncrypt(plain, key []byte) ([]byte, error) {
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err
@@ -56,7 +56,7 @@ func gcmEncrypt(plain, key []byte) ([]byte, error) {
 	return gcm.Seal(nonce, nonce, plain, nil), nil
 }
 
-func gcmDecrypt(encrypted, key []byte) ([]byte, error) {
+func GcmDecrypt(encrypted, key []byte) ([]byte, error) {
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err

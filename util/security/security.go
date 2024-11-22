@@ -3,13 +3,42 @@ package security
 import (
 	"crypto/hmac"
 	"crypto/md5"
+	"crypto/rand"
 	"crypto/sha1"
 	"crypto/sha256"
 	"crypto/sha512"
 	"encoding/hex"
 
+	"golang.org/x/crypto/pbkdf2"
+	"golang.org/x/crypto/scrypt"
 	"golang.org/x/crypto/sha3"
 )
+
+const SALT_LENGTH = 16
+const SCRYPT_N = 32768
+
+func RandomBytes(len int) ([]byte, error) {
+	b := make([]byte, len)
+	_, err := rand.Read(b)
+	if err != nil {
+		return nil, err
+	}
+	return b, nil
+}
+
+// PBKDF2 (Password-Based Key Derivation Function 2)
+func Pbkdf2Key(password string, salt []byte, keyLength, iterations int) []byte {
+	passwordBytes := []byte(password)
+	// Derive the key using PBKDF2 with SHA-256
+	key := pbkdf2.Key(passwordBytes, salt, iterations, keyLength, sha256.New)
+	return key
+}
+
+func DeriveKey(password string, salt []byte, keyLength, scrypt_N int) []byte {
+	passwordBytes := []byte(password)
+	key, _ := scrypt.Key(passwordBytes, salt, scrypt_N, 8, 1, keyLength)
+	return key
+}
 
 // Hash functions
 
