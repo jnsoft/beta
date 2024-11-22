@@ -1,7 +1,7 @@
 # beta
 
 ## About
-CLI tool build in go, using cobra to handle commands
+CLI tool build in go, using cobra to handle commands.
 
 ## Start project
 go mod init github.com/jnsoft/beta
