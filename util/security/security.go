@@ -8,6 +8,7 @@ import (
 	"crypto/sha256"
 	"crypto/sha512"
 	"encoding/hex"
+	"math/big"
 
 	"golang.org/x/crypto/pbkdf2"
 	"golang.org/x/crypto/scrypt"
@@ -38,6 +39,30 @@ func DeriveKey(password string, salt []byte, keyLength, scrypt_N int) []byte {
 	passwordBytes := []byte(password)
 	key, _ := scrypt.Key(passwordBytes, salt, scrypt_N, 8, 1, keyLength)
 	return key
+}
+
+func GeneratePassword(length int, useComplex bool) (string, error) {
+	const (
+		letterBytes  = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789"
+		complexBytes = "!@#$%^&*()-_=+[]{}|;:,.<>?/"
+	)
+
+	var passwordBytes []byte
+	if useComplex {
+		passwordBytes = []byte(letterBytes + complexBytes)
+	} else {
+		passwordBytes = []byte(letterBytes)
+	}
+	// Generate the random password
+	password := make([]byte, length)
+	for i := range password {
+		index, err := rand.Int(rand.Reader, big.NewInt(int64(len(passwordBytes))))
+		if err != nil {
+			return "", err
+		}
+		password[i] = passwordBytes[index.Int64()]
+	}
+	return string(password), nil
 }
 
 // Hash functions
