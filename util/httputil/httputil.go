@@ -15,7 +15,7 @@ import (
 )
 
 // Usage: connected := TestConnection("example.com", 80, 3 * time.Second, "")
-func TestConnection(address string, port int, timeout time.Duration, proxyURL string) bool {
+func TestConnection(address string, port int, timeout time.Duration, proxyURL string) (bool, int64) {
 	// Combine the address and port into a single string
 	target := fmt.Sprintf("%s:%d", address, port)
 	// Create a dialer
@@ -25,13 +25,13 @@ func TestConnection(address string, port int, timeout time.Duration, proxyURL st
 		parsedProxyURL, err := url.Parse(proxyURL)
 		if err != nil {
 			fmt.Printf("Invalid proxy URL: %v\n", err)
-			return false
+			return false, 0
 		}
 		// Create a proxy dialer
 		dialer, err = proxy.FromURL(parsedProxyURL, proxy.Direct)
 		if err != nil {
 			fmt.Printf("Failed to create proxy dialer: %v\n", err)
-			return false
+			return false, 0
 		}
 	} else {
 		// Use a direct connection if no proxy is specified
@@ -40,12 +40,14 @@ func TestConnection(address string, port int, timeout time.Duration, proxyURL st
 	// Attempt to establish a connection using the dialer
 	// ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	// defer cancel()
+	start := time.Now()
 	conn, err := dialer.Dial("tcp", target)
+	duration := time.Since(start).Milliseconds()
 	if err != nil {
-		return false
+		return false, 0
 	}
 	defer conn.Close()
-	return true
+	return true, duration
 }
 
 func GetString(url string, proxyURL string) (string, int, error) {

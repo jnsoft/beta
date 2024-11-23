@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/jnsoft/beta/util/httputil"
+	"github.com/jnsoft/beta/util/security"
 	"github.com/spf13/cobra"
 )
 
@@ -16,6 +17,8 @@ var fileName string
 var lines string
 var proxyUrl string
 var portNumber string
+var key string
+var hexString string
 
 func main() {
 	var betaCmd = &cobra.Command{
@@ -27,6 +30,7 @@ func main() {
 
 	betaCmd.AddCommand(versionCmd)
 	betaCmd.AddCommand(testConnectionCmd())
+	betaCmd.AddCommand(passCmd())
 	betaCmd.AddCommand(b64Cmd())
 	betaCmd.AddCommand(hexCmd())
 	betaCmd.AddCommand(uuidCmd())
@@ -43,12 +47,12 @@ func main() {
 
 func testConnectionCmd() *cobra.Command {
 	var testConnectionCmd = &cobra.Command{
-		Use:   "connect",
+		Use:   "connect [address]",
 		Short: "Test network connection.",
 		Args:  cobra.ExactArgs(1),
-		PreRunE: func(cmd *cobra.Command, args []string) error {
-			return IncorrectUsageErr()
-		},
+		//PreRunE: func(cmd *cobra.Command, args []string) error {
+		//	return IncorrectUsageErr()
+		//},
 		Run: func(cmd *cobra.Command, args []string) {
 			address := args[0]
 
@@ -57,14 +61,34 @@ func testConnectionCmd() *cobra.Command {
 				fmt.Printf("Error converting repitions to int: %v\n", err)
 				os.Exit(1)
 			}
-			httputil.TestConnection(address, port, 3*time.Second, proxyUrl)
+			res, duration := httputil.TestConnection(address, port, 3*time.Second, proxyUrl)
+			strRes := fmt.Sprintf("Connected: %t, Time: %d", res, duration)
+			cmd.Println(strRes)
 		},
 	}
 
 	addProxyFlag(testConnectionCmd)
-	testConnectionCmd.Flags().StringVarP(&repitions, "port", "p", "80", "Port number to use")
+	testConnectionCmd.Flags().StringVarP(&portNumber, "port", "p", "80", "Port number to use")
 
 	return testConnectionCmd
+}
+
+func passCmd() *cobra.Command {
+	var passCmd = &cobra.Command{
+		Use:   "pass [length]",
+		Short: "Generate random password.",
+		Args:  cobra.ExactArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			len, err := strconv.Atoi(args[0])
+			if err != nil {
+				fmt.Printf("Error converting length to int: %v\n", err)
+				os.Exit(1)
+			}
+			pw, _ := security.GeneratePassword(len, true)
+			cmd.Println(pw)
+		},
+	}
+	return passCmd
 }
 
 func insertLineBreakFlag(cmd *cobra.Command) {
@@ -72,7 +96,7 @@ func insertLineBreakFlag(cmd *cobra.Command) {
 }
 
 func addProxyFlag(cmd *cobra.Command) {
-	cmd.Flags().StringVarP(&proxyUrl, "proxy", "p", "", "proxy url")
+	cmd.Flags().StringVarP(&proxyUrl, "proxy", "x", "", "proxy url")
 }
 
 func addFileFlag(cmd *cobra.Command) {
