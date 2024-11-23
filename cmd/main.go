@@ -11,14 +11,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var inputFile string
-var outputFile string
-var fileName string
-var lines string
-var proxyUrl string
-var portNumber string
-var key string
-var hexString string
+var inputFile string  // i
+var outputFile string // o
+var fileName string   // f
+var lines string      // l
+var proxyUrl string   // x
+var portNumber string // p
+var key string        // k
+var hexString string  // h
+var n string          // n
 
 func main() {
 	var betaCmd = &cobra.Command{
@@ -37,6 +38,7 @@ func main() {
 	betaCmd.AddCommand(httpCmd())
 	betaCmd.AddCommand(hashCmd())
 	betaCmd.AddCommand(hmacCmd())
+	betaCmd.AddCommand(keyCmd())
 
 	err := betaCmd.Execute()
 	if err != nil {
@@ -93,6 +95,10 @@ func passCmd() *cobra.Command {
 
 func insertLineBreakFlag(cmd *cobra.Command) {
 	cmd.Flags().StringVarP(&lines, "lines", "l", "0", "Number of characters per line (-l 76)")
+}
+
+func addNFlag(cmd *cobra.Command) {
+	cmd.Flags().StringVarP(&lines, "n", "", "32", "Length of key in bytes")
 }
 
 func addProxyFlag(cmd *cobra.Command) {
