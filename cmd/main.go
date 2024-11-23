@@ -98,7 +98,7 @@ func insertLineBreakFlag(cmd *cobra.Command) {
 }
 
 func addNFlag(cmd *cobra.Command) {
-	cmd.Flags().StringVarP(&lines, "n", "", "32", "Length of key in bytes")
+	cmd.Flags().StringVarP(&n, "n", "n", "32", "Length of key in bytes")
 }
 
 func addProxyFlag(cmd *cobra.Command) {

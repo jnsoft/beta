@@ -23,22 +23,6 @@ func keyCmd() *cobra.Command {
 		},
 	}
 
-	cmd.AddCommand(newKeyCmd())
-
-	return cmd
-}
-
-func newCmd() *cobra.Command {
-	var cmd = &cobra.Command{
-		Use:   "new",
-		Short: "Generate new secure key.",
-		PreRunE: func(cmd *cobra.Command, args []string) error {
-			return IncorrectUsageErr()
-		},
-		Run: func(cmd *cobra.Command, args []string) {
-		},
-	}
-
 	cmd.AddCommand(newHexCmd())
 	cmd.AddCommand(newB64Cmd())
 
@@ -79,7 +63,6 @@ func newHexCmd() *cobra.Command {
 
 	addNFlag(cmd)
 	cmd.Flags().StringVarP(&outputFile, "output", "o", "", "Output file")
-
 	return cmd
 }
 
@@ -117,6 +100,5 @@ func newB64Cmd() *cobra.Command {
 
 	addNFlag(cmd)
 	cmd.Flags().StringVarP(&outputFile, "output", "o", "", "Output file")
-
 	return cmd
 }
