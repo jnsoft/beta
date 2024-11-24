@@ -10,6 +10,7 @@ import (
 	"encoding/hex"
 	"math/big"
 
+	"github.com/jnsoft/beta/util/stringutil"
 	"golang.org/x/crypto/pbkdf2"
 	"golang.org/x/crypto/scrypt"
 	"golang.org/x/crypto/sha3"
@@ -42,7 +43,8 @@ func DeriveKey(password string, salt []byte, keyLength, scrypt_N int) []byte {
 }
 
 func DeriveKeyWithoutSalt(password string, keyLength, scrypt_N int) []byte {
-	salt := HashSHA3([]byte(strings.password))
+	sha := sha256.Sum256([]byte(stringutil.Reverse(password)))
+	salt := sha[len(sha)-16:] // get last 16 bytes
 	passwordBytes := []byte(password)
 	key, _ := scrypt.Key(passwordBytes, salt, scrypt_N, 8, 1, keyLength)
 	return key
