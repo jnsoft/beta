@@ -6,6 +6,15 @@ import (
 	"strings"
 )
 
+func Reverse(s string) string {
+	runes := []rune(s) // Convert the string to a rune slice
+	// i starts at 0, j starts at end of string. Every step, i is incremented and j is decrimented
+	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
+		runes[i], runes[j] = runes[j], runes[i] // Swap the runes
+	}
+	return string(runes)
+}
+
 func ToBase64(data []byte, lineBreak int) string {
 	encoded := base64.StdEncoding.EncodeToString(data)
 	if lineBreak > 0 {
@@ -30,6 +39,18 @@ func ToHex(data []byte, lineBreak int) string {
 func FromHex(data string) ([]byte, error) {
 	cleanedData := strings.ReplaceAll(data, "\n", "")
 	return hex.DecodeString(cleanedData)
+}
+
+func IsHexString(s string) bool {
+	if len(s) == 0 {
+		return false
+	}
+	for _, char := range s {
+		if !((char >= '0' && char <= '9') || (char >= 'a' && char <= 'f') || (char >= 'A' && char <= 'F')) {
+			return false
+		}
+	}
+	return true
 }
 
 func insertLineBreaks(s string, n int) string {
