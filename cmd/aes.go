@@ -9,8 +9,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// TODO: om string input behövs ingen fil för output (frivillig)
-
 func aesCmd() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:   "aes",
@@ -50,17 +48,20 @@ func encryptCmd() *cobra.Command {
 			stringToString := false
 			stringToFile := false
 
-			if args[0] != "" {
+			if len(args) > 0 && args[0] != "" {
 				if outputFile == "" {
 					stringToString = true
+					cmd.Println("stringToSting")
 				} else {
 					stringToFile = true
+					cmd.Println("stringToFile")
 				}
 			} else {
 				if inputFile == "" {
 					cmd.Println("Please provide a string or file to encrypt")
 					os.Exit(1)
 				} else { // fileToFile
+					cmd.Println("fileToFile")
 					if outputFile == "" {
 						cmd.Println("Please provide a target file for encrypted data")
 						os.Exit(1)
@@ -85,6 +86,7 @@ func encryptCmd() *cobra.Command {
 			}
 
 			if stringToString {
+				cmd.Println("here")
 				fmt.Println(stringutil.ToBase64(cipher, 76))
 			} else {
 				err = os.WriteFile(outputFile, cipher, 0644)
@@ -122,7 +124,7 @@ func decryptCmd() *cobra.Command {
 			stringToString := false
 			stringToFile := false
 
-			if args[0] != "" {
+			if len(args) > 0 && args[0] != "" {
 				if outputFile == "" {
 					stringToString = true
 				} else {

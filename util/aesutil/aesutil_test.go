@@ -2,6 +2,7 @@ package aesutil
 
 import (
 	"bytes"
+	"crypto/rand"
 	"testing"
 )
 
@@ -37,5 +38,18 @@ func TestAesDecryptWithWrongPassword(t *testing.T) {
 	_, err = AesDecrypt(encrypted, wrongPassword)
 	if err == nil {
 		t.Fatalf("AesDecrypt should have failed with wrong password")
+	}
+}
+
+func TestGCMEncryptDecrypt(t *testing.T) {
+	key := make([]byte, 32)
+	rand.Read(key)
+
+	plain := []byte("Hello, World!")
+	cipher, _ := GcmEncrypt(plain, key)
+	plain_again, _ := GcmDecrypt(cipher, key)
+
+	if !bytes.Equal(plain, plain_again) {
+		t.Errorf("GCM encrypt/decrypt failed, got %s, expected %s", plain_again, plain)
 	}
 }
