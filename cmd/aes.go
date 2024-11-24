@@ -47,18 +47,30 @@ func encryptCmd() *cobra.Command {
 				os.Exit(1)
 			}
 
-			if outputFile == "" {
-				cmd.Println("Please provide a target file for encrypted data")
-				os.Exit(1)
-			}
+			stringToString := false
+			stringToFile := false
 
-			if inputFile == "" { // string input
-				if args[0] == "" {
+			if args[0] != "" {
+				if outputFile == "" {
+					stringToString = true
+				} else {
+					stringToFile = true
+				}
+			} else {
+				if inputFile == "" {
 					cmd.Println("Please provide a string or file to encrypt")
 					os.Exit(1)
+				} else { // fileToFile
+					if outputFile == "" {
+						cmd.Println("Please provide a target file for encrypted data")
+						os.Exit(1)
+					}
 				}
+			}
+
+			if stringToString || stringToFile {
 				plain = []byte(args[0])
-			} else { // file input
+			} else { // fileToFile
 				plain, err = os.ReadFile(inputFile)
 				if err != nil {
 					cmd.Println("Error reading file:", err)
@@ -72,7 +84,7 @@ func encryptCmd() *cobra.Command {
 				os.Exit(1)
 			}
 
-			if inputFile == "" {
+			if stringToString {
 				fmt.Println(stringutil.ToBase64(cipher, 76))
 			} else {
 				err = os.WriteFile(outputFile, cipher, 0644)
@@ -81,7 +93,6 @@ func encryptCmd() *cobra.Command {
 					os.Exit(1)
 				}
 			}
-
 		},
 	}
 	addDefaultFileFlags(cmd)
@@ -108,18 +119,29 @@ func decryptCmd() *cobra.Command {
 				os.Exit(1)
 			}
 
-			if outputFile == "" {
-				cmd.Println("Please provide a target file for decrypted data")
-				os.Exit(1)
-			}
+			stringToString := false
+			stringToFile := false
 
-			if inputFile == "" { // string input
-				if args[0] == "" {
+			if args[0] != "" {
+				if outputFile == "" {
+					stringToString = true
+				} else {
+					stringToFile = true
+				}
+			} else {
+				if inputFile == "" {
 					cmd.Println("Please provide a string or file to decrypt")
 					os.Exit(1)
+				} else { // fileToFile
+					if outputFile == "" {
+						cmd.Println("Please provide a target file for decrypted data")
+						os.Exit(1)
+					}
 				}
-				str := []byte(args[0])
-				cipher, err = stringutil.FromBase64(string(str))
+			}
+
+			if stringToString || stringToFile {
+				cipher, err = stringutil.FromBase64(args[0])
 				if err != nil {
 					cmd.Println("Error reading b64 string:", err)
 					os.Exit(1)
@@ -138,8 +160,8 @@ func decryptCmd() *cobra.Command {
 				os.Exit(1)
 			}
 
-			if inputFile == "" {
-				fmt.Println(plain)
+			if stringToString {
+				fmt.Println(string(plain))
 			} else {
 				err = os.WriteFile(outputFile, plain, 0644)
 				if err != nil {
