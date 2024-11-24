@@ -41,6 +41,13 @@ func DeriveKey(password string, salt []byte, keyLength, scrypt_N int) []byte {
 	return key
 }
 
+func DeriveKeyWithoutSalt(password string, keyLength, scrypt_N int) []byte {
+	salt := HashSHA3([]byte(strings.password))
+	passwordBytes := []byte(password)
+	key, _ := scrypt.Key(passwordBytes, salt, scrypt_N, 8, 1, keyLength)
+	return key
+}
+
 func GeneratePassword(length int, useComplex bool) (string, error) {
 	const (
 		letterBytes  = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789"

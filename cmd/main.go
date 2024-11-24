@@ -11,6 +11,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// h is used in help
 var inputFile string  // i
 var outputFile string // o
 var fileName string   // f
@@ -18,7 +19,7 @@ var lines string      // l
 var proxyUrl string   // x
 var portNumber string // p
 var key string        // k
-var hexString string  // h
+var hexString string  //
 var n string          // n
 
 func main() {
@@ -87,7 +88,7 @@ func passCmd() *cobra.Command {
 				os.Exit(1)
 			}
 			pw, _ := security.GeneratePassword(len, true)
-			cmd.Println(pw)
+			fmt.Println(pw)
 		},
 	}
 	return passCmd

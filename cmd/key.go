@@ -5,12 +5,11 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/jnsoft/beta/util/cmdutil"
 	"github.com/jnsoft/beta/util/security"
 	"github.com/jnsoft/beta/util/stringutil"
 	"github.com/spf13/cobra"
 )
-
-var outformat string
 
 func keyCmd() *cobra.Command {
 	var cmd = &cobra.Command{
@@ -56,7 +55,7 @@ func newHexCmd() *cobra.Command {
 					os.Exit(1)
 				}
 			} else {
-				cmd.Println(stringKey)
+				fmt.Println(stringKey)
 			}
 		},
 	}
@@ -93,7 +92,52 @@ func newB64Cmd() *cobra.Command {
 					os.Exit(1)
 				}
 			} else {
-				cmd.Println(stringKey)
+				fmt.Println(stringKey)
+			}
+		},
+	}
+
+	addNFlag(cmd)
+	cmd.Flags().StringVarP(&outputFile, "output", "o", "", "Output file")
+	return cmd
+}
+
+func deriveCmd() *cobra.Command {
+	var cmd = &cobra.Command{
+		Use:   "derive",
+		Short: "Derive from password a new secure key of length n bytes in hex format.",
+		Run: func(cmd *cobra.Command, args []string) {
+
+			n, err := strconv.Atoi(n)
+			if err != nil {
+				cmd.Printf("Error converting n to int: %v\n", err)
+				os.Exit(1)
+			}
+
+			pass, err := cmdutil.ReadPassword()
+			if err != nil {
+				fmt.Println("Error reading password: ", err)
+				os.Exit(1)
+			}
+
+			security.DeriveKey(pass)
+
+			key, err := security.RandomBytes(n)
+			if err != nil {
+				fmt.Println("Error generating key: ", err)
+				os.Exit(1)
+			}
+
+			stringKey := stringutil.ToHex(key, 0)
+
+			if outputFile != "" {
+				err = os.WriteFile(outputFile, []byte(stringKey), 0644)
+				if err != nil {
+					cmd.Println("Error writing file:", err)
+					os.Exit(1)
+				}
+			} else {
+				fmt.Println(stringKey)
 			}
 		},
 	}
