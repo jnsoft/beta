@@ -156,7 +156,7 @@ func decryptCmd() *cobra.Command {
 				}
 			}
 
-			plain, err := aesutil.GcmEncrypt(cipher, key)
+			plain, err := aesutil.GcmDecrypt(cipher, key)
 			if err != nil {
 				cmd.Println("Error during decryption:", err)
 				os.Exit(1)
