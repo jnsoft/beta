@@ -41,6 +41,7 @@ func main() {
 	betaCmd.AddCommand(hashCmd())
 	betaCmd.AddCommand(hmacCmd())
 	betaCmd.AddCommand(keyCmd())
+	betaCmd.AddCommand(aesCmd())
 
 	err := betaCmd.Execute()
 	if err != nil {
@@ -95,6 +96,10 @@ func passCmd() *cobra.Command {
 	return passCmd
 }
 
+func insertKeyFlag(cmd *cobra.Command) {
+	cmd.Flags().StringVarP(&key, "key", "k", "", "Key to use in hex")
+}
+
 func insertLineBreakFlag(cmd *cobra.Command) {
 	cmd.Flags().StringVarP(&lines, "lines", "l", "0", "Number of characters per line (-l 76)")
 }
@@ -112,8 +117,8 @@ func addFileFlag(cmd *cobra.Command) {
 }
 
 func addDefaultFileFlags(cmd *cobra.Command) {
-	cmd.Flags().StringVarP(&inputFile, "input", "i", "", "Input file to encode")
-	cmd.Flags().StringVarP(&outputFile, "output", "o", "", "Output file to write decoded data")
+	cmd.Flags().StringVarP(&inputFile, "input", "i", "", "Input file")
+	cmd.Flags().StringVarP(&outputFile, "output", "o", "", "Output file")
 }
 
 func IncorrectUsageErr() error {

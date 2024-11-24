@@ -80,6 +80,7 @@ func fileToB64Cmd() *cobra.Command {
 		Use:   "encode",
 		Short: "Encode a file to base64.",
 		Run: func(cmd *cobra.Command, args []string) {
+
 			n, err := strconv.Atoi(lines)
 			if err != nil {
 				cmd.Printf("Error converting lines to int: %v\n", err)

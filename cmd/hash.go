@@ -11,7 +11,7 @@ import (
 const MISSING_INPUT = "Please provide a string or file to hash"
 
 func hashCmd() *cobra.Command {
-	var hashCmd = &cobra.Command{
+	var cmd = &cobra.Command{
 		Use:   "hash",
 		Short: "Hash util.",
 		PreRunE: func(cmd *cobra.Command, args []string) error {
@@ -21,13 +21,13 @@ func hashCmd() *cobra.Command {
 		},
 	}
 
-	hashCmd.AddCommand(md5Cmd())
-	hashCmd.AddCommand(sha1Cmd())
-	hashCmd.AddCommand(sha256Cmd())
-	hashCmd.AddCommand(sha512Cmd())
-	hashCmd.AddCommand(sha3Cmd())
+	cmd.AddCommand(md5Cmd())
+	cmd.AddCommand(sha1Cmd())
+	cmd.AddCommand(sha256Cmd())
+	cmd.AddCommand(sha512Cmd())
+	cmd.AddCommand(sha3Cmd())
 
-	return hashCmd
+	return cmd
 }
 
 func md5Cmd() *cobra.Command {

@@ -154,7 +154,7 @@ func genericHVerifyMACCmd(hmacVerifyFunc func(data, key []byte, hex string) bool
 		},
 	}
 	addFileFlag(cmd)
-	cmd.Flags().StringVarP(&key, "key", "k", "", "Key to use in hex")
+	insertKeyFlag(cmd)
 	cmd.Flags().StringVarP(&hexString, "hmac", "", "", "HMAC to verify")
 	return cmd
 }
