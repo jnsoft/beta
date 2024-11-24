@@ -35,6 +35,15 @@ hmac=$(<hmac.out)
 beta hmac verify sha3 -k $key --hmac $hmac -f tmp.out
 ``` 
 
+```
+key=$(./beta key hex -n 32)
+./beta aes encrypt "Hello, World!" -k $key
+./beta aes decrypt <encrypted_b64_string> -k $key
+
+./beta aes encrypt "Hello, World!" -k $key
+
+```
+
 # Build and Test
 ```
 go mod tidy

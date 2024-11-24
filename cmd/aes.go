@@ -9,6 +9,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// TODO: om string input behövs ingen fil för output (frivillig)
+
 func aesCmd() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:   "aes",
