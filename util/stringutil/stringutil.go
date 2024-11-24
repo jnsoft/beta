@@ -41,6 +41,18 @@ func FromHex(data string) ([]byte, error) {
 	return hex.DecodeString(cleanedData)
 }
 
+func IsHexString(s string) bool {
+	if len(s) == 0 {
+		return false
+	}
+	for _, char := range s {
+		if !((char >= '0' && char <= '9') || (char >= 'a' && char <= 'f') || (char >= 'A' && char <= 'F')) {
+			return false
+		}
+	}
+	return true
+}
+
 func insertLineBreaks(s string, n int) string {
 	var result string
 	for i := 0; i < len(s); i += n {

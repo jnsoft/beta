@@ -24,6 +24,7 @@ func keyCmd() *cobra.Command {
 
 	cmd.AddCommand(newHexCmd())
 	cmd.AddCommand(newB64Cmd())
+	cmd.AddCommand(deriveCmd())
 
 	return cmd
 }
@@ -105,7 +106,7 @@ func newB64Cmd() *cobra.Command {
 func deriveCmd() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:   "derive",
-		Short: "Derive from password a new secure key of length n bytes in hex format.",
+		Short: "Derive a secure key of length n bytes in hex format from given password.",
 		Run: func(cmd *cobra.Command, args []string) {
 
 			n, err := strconv.Atoi(n)
@@ -114,18 +115,31 @@ func deriveCmd() *cobra.Command {
 				os.Exit(1)
 			}
 
-			pass, err := cmdutil.ReadPassword()
+			if n < 1 {
+				fmt.Println("Key length to short")
+				os.Exit(1)
+			}
+
+			pass, err := cmdutil.ReadPassword(false)
 			if err != nil {
 				fmt.Println("Error reading password: ", err)
 				os.Exit(1)
 			}
 
-			security.DeriveKey(pass)
+			var key []byte
 
-			key, err := security.RandomBytes(n)
-			if err != nil {
-				fmt.Println("Error generating key: ", err)
+			if salt == "" { // no salt
+				key = security.DeriveKeyWithoutSalt(pass, n, security.SCRYPT_N)
+			} else if len(salt) != 16 || !stringutil.IsHexString(salt) { // invalid salt
+				fmt.Println("Salt must be 16 bytes, given as a hex string")
 				os.Exit(1)
+			} else { // with salt
+				salt, err := stringutil.FromHex(salt)
+				if err != nil {
+					fmt.Println("Error reading hex: ", err)
+					os.Exit(1)
+				}
+				key = security.DeriveKey(pass, salt, n, security.SCRYPT_N)
 			}
 
 			stringKey := stringutil.ToHex(key, 0)
@@ -143,6 +157,7 @@ func deriveCmd() *cobra.Command {
 	}
 
 	addNFlag(cmd)
+	cmd.Flags().StringVarP(&salt, "salt", "s", "", "Provided salt (16 byte hex string)")
 	cmd.Flags().StringVarP(&outputFile, "output", "o", "", "Output file")
 	return cmd
 }

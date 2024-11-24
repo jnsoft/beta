@@ -21,6 +21,7 @@ var portNumber string // p
 var key string        // k
 var hexString string  //
 var n string          // n
+var salt string       // s
 
 func main() {
 	var betaCmd = &cobra.Command{
