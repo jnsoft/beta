@@ -7,7 +7,7 @@
             "request": "launch",
             "mode": "auto",
             //"program": "${fileDirname}",
-            "program": "${workspaceFolder}/src/main.go",
+            "program": "${workspaceFolder}/cmd/main.go",
             "args": [
                 "-v",
                 "net"
